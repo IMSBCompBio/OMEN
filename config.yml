@@ -1,0 +1,11 @@
+# config.yml
+# Configuration file for OMEN project
+
+# Path to the sample features matrix (sf_mat.npy)
+sample_features_path: sf_mat.npy
+
+# Path to the neighbor matrix (A_mat.npy)
+neighbor_matrix_path: A_mat.npy
+
+# Path to the coordinates Excel file (coords_brain.xlsx)
+coords_path: coords_brain.xlsx

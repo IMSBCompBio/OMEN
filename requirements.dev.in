@@ -1,9 +1,6 @@
 ruff
-detect-secrets
 jupyterlab
 jupyter-client==7.4.4
 uv
 pre-commit
-nose
-sqlfluff
 openpyxl
