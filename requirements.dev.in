@@ -4,3 +4,4 @@ jupyter-client==7.4.4
 uv
 pre-commit
 openpyxl
+twine
