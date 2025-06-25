@@ -1,2 +1,2 @@
 # OMEN
-Extension of SPACO algorithm that Performs Dimensional reduction across two different modalities 
+Extension of SPACO algorithm that performs dimensional reduction across two different modalities 
