@@ -53,7 +53,6 @@ from scipy.sparse.linalg import eigs
 from scipy.stats import t
 from typing import Tuple
 from concurrent.futures import ThreadPoolExecutor
-from sklearn.preprocessing import StandardScaler
 from functools import lru_cache
 
 
@@ -195,9 +194,11 @@ class SPACO:
             X = X.to_numpy()  # Convert DataFrame to NumPy array
         if not isinstance(X, np.ndarray):
             raise ValueError("Input must be a numpy array.\n data type: ", type(X))
-        scaler = StandardScaler()
+
+        # removing constant features and scaling the data
         X = self.__remove_constant_features(X)
-        return scaler.fit_transform(X)
+        x_scaled = (X - X.mean()) / X.std()
+        return x_scaled
 
     def __check_if_square(self, X: np.ndarray) -> np.ndarray:
         """

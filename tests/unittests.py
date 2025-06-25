@@ -1,8 +1,9 @@
 import unittest
 import numpy as np
 import pandas as pd
-from spaco_py.SpaCoObject import SPACO
+from SpaCoObject import SPACO
 from scipy.stats import ks_2samp
+from config_loader import sample_features_path, neighbor_matrix_path, coords_path
 # filepath: src/spaco_py/test_SpaCoObject.py
 
 
@@ -11,11 +12,10 @@ class TestSPACO(unittest.TestCase):
         """
         Using benchmark data from the SPACO paper
         """
-        self.sample_features = np.load(
-            "/home/krastega0/SpaCo_py/src/spaco_py/sf_mat.npy"
-        )
-        self.neighbormatrix = np.load("/home/krastega0/SpaCo_py/src/spaco_py/A_mat.npy")
-        self.spaco = SPACO(self.sample_features, self.neighbormatrix)
+        self.sample_features = np.load(sample_features_path)
+        self.neighbormatrix = np.load(neighbor_matrix_path)
+        self.coords = pd.read_excel(coords_path)
+        self.spaco = SPACO(self.sample_features, self.neighbormatrix, self.coords)
 
         # variable is redundant, but I want to keep it for testing purposes
         self.centered_scaled_features = self.spaco._SPACO__preprocess(
@@ -79,7 +79,7 @@ class TestSPACO(unittest.TestCase):
         print("Testing the __preprocess method")
         # centering and scaling
         x_centered_scaled = SPACO(
-            self.sample_features, self.neighbormatrix
+            self.sample_features, self.neighbormatrix, self.coords
         )._SPACO__preprocess(self.sample_features)
 
         # checking to see if the condition I put to check if the data is a numpy array
@@ -88,7 +88,7 @@ class TestSPACO(unittest.TestCase):
 
         # checking to see if the change in data type from numpy array to pandas dataframe
         # does not cause an error
-        SPACO(sf_df, self.neighbormatrix)._SPACO__preprocess(sf_df)
+        SPACO(sf_df, self.neighbormatrix, self.coords)._SPACO__preprocess(sf_df)
 
         # checking to see if the output is a numpy array
         self.assertTrue(isinstance(x_centered_scaled, np.ndarray))

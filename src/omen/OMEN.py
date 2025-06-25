@@ -1,5 +1,6 @@
 from spaco_py.SpaCoObject import SPACO
 import numpy as np
+from config_loader import sample_features_path, neighbor_matrix_path
 
 
 class OMEN(SPACO):
@@ -24,10 +25,8 @@ class OMEN(SPACO):
 
 if __name__ == "__main__":
     # Loading .npy file
-    sf = np.load("/home/krastega0/SpaCo_py/src/spaco_py/sf_mat.npy", allow_pickle=False)
-    neighbor = np.load(
-        "/home/krastega0/SpaCo_py/src/spaco_py/A_mat.npy", allow_pickle=False
-    )
+    sf = np.load(sample_features_path, allow_pickle=False)
+    neighbor = np.load(neighbor_matrix_path, allow_pickle=False)
 
     # calling SPACO class
     omen = OMEN(sample_features=sf, neighbormatrix=neighbor)
