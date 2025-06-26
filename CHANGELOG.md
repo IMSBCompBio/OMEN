@@ -2,6 +2,18 @@
 
 
 
+## v0.0.5 (2025-06-26)
+
+### Fix
+
+* fix: deleted init py ([`a0482d1`](https://github.com/IMSBCompBio/OMEN/commit/a0482d1ce87147b24a8cc151b9a210fd8bf4567d))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+another log merge ([`3800939`](https://github.com/IMSBCompBio/OMEN/commit/3800939e0b56388870590af89290a8c907f896a1))
+
+
 ## v0.0.4 (2025-06-26)
 
 ### Fix
