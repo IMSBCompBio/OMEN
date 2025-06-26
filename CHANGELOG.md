@@ -2,6 +2,18 @@
 
 
 
+## v0.0.8 (2025-06-26)
+
+### Fix
+
+* fix: removed setuptools ([`22d9131`](https://github.com/IMSBCompBio/OMEN/commit/22d91313a120544d054c2f779d617ebe22e539fb))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+ofc another merge log ([`7ac2fcd`](https://github.com/IMSBCompBio/OMEN/commit/7ac2fcdf528d54a4181f776469d2ca564176f1f3))
+
+
 ## v0.0.7 (2025-06-26)
 
 ### Fix
