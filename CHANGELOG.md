@@ -2,6 +2,18 @@
 
 
 
+## v0.0.7 (2025-06-26)
+
+### Fix
+
+* fix: dynamic versioning implemented ([`01dd76b`](https://github.com/IMSBCompBio/OMEN/commit/01dd76b675fa400c87e614c0d55c039c7d4ebbd4))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+last pull ([`20edd69`](https://github.com/IMSBCompBio/OMEN/commit/20edd69851d901d8924c53e58b9f738b7ad8d89f))
+
+
 ## v0.0.6 (2025-06-26)
 
 ### Fix
