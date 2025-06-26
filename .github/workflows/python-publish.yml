@@ -26,6 +26,10 @@ jobs:
         uses: python-semantic-release/python-semantic-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout updated version
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Build package
         run: python -m build
       - name: Publish to TestPyPI
