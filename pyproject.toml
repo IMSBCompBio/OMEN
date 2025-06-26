@@ -55,6 +55,7 @@ keywords = ["Spatial", "Component", "Analysis", "Graph", "Laplacian", "Eigenvalu
 license = "MIT"
 license-files = ["LICEN[CS]E.*"]
 
+
 classifiers = [
   "Programming Language :: Python :: 3",
   "Development Status :: 3 - Alpha",
