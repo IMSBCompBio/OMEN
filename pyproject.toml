@@ -71,15 +71,11 @@ classifiers = [
 omen = "omen:main"
 SPACO = "SpaCoObject:SPACO"
 [build-system]
-requires = ["hatchling", "setuptools_scm"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.setuptools_scm]
-version_scheme = "post-release"
-local_scheme = "node-and-date"
-
 [tool.hatch.version]
-source = "setuptools_scm"
+source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/omen"]
