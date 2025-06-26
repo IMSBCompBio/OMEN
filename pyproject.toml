@@ -185,3 +185,8 @@ name = "testpypi"
 url = "https://test.pypi.org/simple/"
 publish-url = "https://test.pypi.org/legacy/"
 explicit = true
+
+[tool.semantic_release]
+version_variable = "src/omen/__init__.py:__version__"
+branch = "main"
+upload_to_pypi = false
