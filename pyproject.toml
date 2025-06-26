@@ -2,8 +2,8 @@
 name = "omen"
 version = "1.0.0"
 description = """
-Spatial componenet analysis where we use the Eigenvectors of the graph laplacian
-as a feature vector. The eigenvectors are then used to project the data onto a
+Spatial componenet analysis where we use the eigenvectors of a Graph Laplacian
+as feature vectors. The eigenvectors are then used to project the data onto a
 low-dimensional space. The resulting low-dimensional space is then used to
 cluster the data. OMEN itself can also be applied to two different modalities using a 
 common coordinate space. Which then would be used to perform dimensionality reduction.
