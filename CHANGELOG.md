@@ -2,6 +2,18 @@
 
 
 
+## v0.0.4 (2025-06-26)
+
+### Fix
+
+* fix: Updated the workflow ([`039a169`](https://github.com/IMSBCompBio/OMEN/commit/039a169d0b4b0733b4e82029485438ca39f94a60))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+updating log ([`07ddcc7`](https://github.com/IMSBCompBio/OMEN/commit/07ddcc78537bec651afe1bd3e9f20d3f561083f7))
+
+
 ## v0.0.3 (2025-06-26)
 
 ### Fix
