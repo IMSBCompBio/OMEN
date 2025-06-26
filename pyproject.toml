@@ -1,6 +1,6 @@
 [project]
 name = "omen"
-version = "1.0.0"
+# version = "1.0.0"  # Commented out to use setuptools_scm for versioning
 description = """
 Spatial componenet analysis where we use the eigenvectors of a Graph Laplacian
 as feature vectors. The eigenvectors are then used to project the data onto a
@@ -70,8 +70,15 @@ classifiers = [
 omen = "omen:main"
 SPACO = "SpaCoObject:SPACO"
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "setuptools_scm"]
 build-backend = "hatchling.build"
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "node-and-date"
+
+[tool.hatch.version]
+source = "setuptools_scm"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/omen"]
