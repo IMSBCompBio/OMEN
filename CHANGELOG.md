@@ -2,6 +2,29 @@
 
 
 
+## v0.0.2 (2025-06-26)
+
+### Fix
+
+* fix: need to use semantic commits ([`8d4828c`](https://github.com/IMSBCompBio/OMEN/commit/8d4828c39f963734f125058df1181e396e9a52ca))
+
+### Unknown
+
+* once again changing the last run line ([`7d2332a`](https://github.com/IMSBCompBio/OMEN/commit/7d2332a9899dc7b74bb5c1af1224bfaf7971add0))
+
+* need to fix this workflow and it is annoying me now ([`d5cf229`](https://github.com/IMSBCompBio/OMEN/commit/d5cf229d8267d15f44eaeceb2ec87e590ef211c7))
+
+
+## v0.0.1 (2025-06-26)
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+have to create a change log I guess ([`84bce94`](https://github.com/IMSBCompBio/OMEN/commit/84bce94b1985cfc56f31ccb4570d350d102d5cbf))
+
+* fixed: import error ([`e489257`](https://github.com/IMSBCompBio/OMEN/commit/e48925757f82b4bc480fe3aca19881826fd191cd))
+
+
 ## v0.0.0 (2025-06-26)
 
 ### Unknown
