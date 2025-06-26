@@ -2,6 +2,15 @@
 
 
 
+## v0.0.3 (2025-06-26)
+
+### Fix
+
+* fix: correct typo in documentation ([`60cd543`](https://github.com/IMSBCompBio/OMEN/commit/60cd543899e698fb9761189901740867d5dcb1c1))
+
+* fix: correct typo in documentation ([`913dc69`](https://github.com/IMSBCompBio/OMEN/commit/913dc69b8783651f098c41f3aa925929b02580bb))
+
+
 ## v0.0.2 (2025-06-26)
 
 ### Fix
@@ -69,7 +78,3 @@ building OMEN package ([`f6d9896`](https://github.com/IMSBCompBio/OMEN/commit/f6
 * Update README.md ([`efa84c2`](https://github.com/IMSBCompBio/OMEN/commit/efa84c26980f3c49214f69a4e8f4052ba3dd0ef2))
 
 * Initial commit ([`8565287`](https://github.com/IMSBCompBio/OMEN/commit/85652870d6b66a65eeb8b304aa60bb4020016495))
-
-* Added changelog ([`f8d4d3d`](https://github.com/IMSBCompBio/OMEN/commit/f8d4d3d2b3a9f4c5b2e9b9b8d8e5f6d0e5a6d6b3))
-
-* creating the changelog ([`f8d4d3d`](https://github.com/IMSBCompBio/OMEN/commit/f8d4d3d2b3a9f4c5b2e9b9b8d8e5f6d0e5a6d6b3))         
