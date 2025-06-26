@@ -2,6 +2,18 @@
 
 
 
+## v0.0.6 (2025-06-26)
+
+### Fix
+
+* fix: automatic versioning implemented ([`67e40d0`](https://github.com/IMSBCompBio/OMEN/commit/67e40d04d8752fdceed7221322c014b3eaabf6e7))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+another log ([`bbc925b`](https://github.com/IMSBCompBio/OMEN/commit/bbc925bb693769909716f2d11f64a27a9d2636a8))
+
+
 ## v0.0.5 (2025-06-26)
 
 ### Fix
