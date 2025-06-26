@@ -30,6 +30,6 @@ jobs:
         run: python -m build
       - name: Publish to TestPyPI
         env:
-          TWINE_USERNAME: __token__
+          TWINE_USERNAME: __token__ # Use the TestPyPI token username
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: python3 -m twine upload --repository testpypi dist/* --verbose
