@@ -17,9 +17,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for all branches and tags
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
       - name: Install build and versioning tools
         run: python -m pip install build twine python-semantic-release
       - name: Bump version and changelog
@@ -31,6 +28,6 @@ jobs:
       - name: Publish to TestPyPI
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --verbose --repository-url https://test.pypi.org/legacy/ dist/*
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
