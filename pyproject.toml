@@ -1,5 +1,6 @@
 [project]
 name = "omen"
+dynamic = ["version"]
 # version = "1.0.0"  # Commented out to use setuptools_scm for versioning
 description = """
 Spatial componenet analysis where we use the eigenvectors of a Graph Laplacian
