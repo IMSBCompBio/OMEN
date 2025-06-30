@@ -1,27 +1,4 @@
-name: Build and Test
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      # … checkout, setup‑python, install build tools …
-      - name: Bump version (dev)
-        uses: python-semantic-release/python-semantic-release@v8.7.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build package
-        run: python -m build
-      # ← No twine upload here!
-
----
-
 name: Release to TestPyPI
-
 on:
   release:
     types: [published]
@@ -30,20 +7,27 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Install build and versioning tools
+
+      - name: Install build tools
         run: python -m pip install build twine python-semantic-release
-      - name: Bump version and changelog
+
+      - name: Bump version & changelog
         uses: python-semantic-release/python-semantic-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build package
         run: python -m build
+
       - name: Publish to TestPyPI
         env:
           TWINE_USERNAME: __token__
