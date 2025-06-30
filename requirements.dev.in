@@ -6,3 +6,4 @@ pre-commit
 openpyxl
 twine
 pytest
+pip
