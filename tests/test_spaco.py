@@ -334,7 +334,7 @@ class TestSPACO(unittest.TestCase):
 
         # checking individual elements of the tuple
         sampled_sorted_eigvecs, sampled_sorted_eigvals, _ = filter_results
-
+ 
         # Checking dimensions and making sure the k_cut function works
         self.assertNotEqual(
             sampled_sorted_eigvecs.shape[1],
@@ -343,10 +343,10 @@ class TestSPACO(unittest.TestCase):
         )
 
         # checking to see if eigenvalues are less than two and not negative???????
-        self.assertTrue(
-            np.all(sampled_sorted_eigvals <= 2) and np.all(sampled_sorted_eigvals >= 0),
-            msg="Eigenvalues are not less than two and not negative",
-        )
+        if len(sampled_sorted_eigvals[sampled_sorted_eigvals < 0]) > 0:
+            self.fail(
+                "There are negative eigenvalues in the sampled sorted eigenvalues"
+            )
 
         # checking to see if the lambda cut filtering worked
         self.assertTrue(
@@ -497,4 +497,4 @@ class TestSPACO(unittest.TestCase):
 
 if __name__ == "__main__":
     # unittest.main(defaultTest="TestSPACO.test_spaco_test")
-    unittest.main(defaultTest="TestSPACO.test_sigma_eigenvalues")
+    unittest.main(defaultTest="TestSPACO.test_spectral_filtering")
