@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from omen.SpaCoObject import SPACO
 from scipy.stats import ks_2samp
-from config_loader import sample_features_path, neighbor_matrix_path, coords_path
+from omen.config_loader import sample_features_path, neighbor_matrix_path, coords_path
 # filepath: src/spaco_py/test_SpaCoObject.py
 
 

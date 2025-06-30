@@ -1,5 +1,6 @@
 numpy
 pandas
-torch==2.2.2
+torch
 scipy
 matplotlib
+momentchi2
