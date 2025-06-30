@@ -1,22 +1,38 @@
-# This workflow will build and publish your Python package to TestPyPI using a classic API token stored in GitHub Secrets.
-# Make sure you have added TEST_PYPI_API_TOKEN as a secret in your repository.
-
-name: Build, Version, and Publish Python Package
+name: Build and Test
 
 on:
   push:
     branches:
       - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # … checkout, setup‑python, install build tools …
+      - name: Bump version (dev)
+        uses: python-semantic-release/python-semantic-release@v8.7.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build package
+        run: python -m build
+      # ← No twine upload here!
+
+---
+
+name: Release to TestPyPI
+
+on:
   release:
     types: [published]
 
 jobs:
-  build-version-publish:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
@@ -26,14 +42,10 @@ jobs:
         uses: python-semantic-release/python-semantic-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout updated version
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Build package
         run: python -m build
       - name: Publish to TestPyPI
         env:
-          TWINE_USERNAME: __token__ # Use the TestPyPI token username
+          TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: python3 -m twine upload --repository testpypi dist/* --verbose
