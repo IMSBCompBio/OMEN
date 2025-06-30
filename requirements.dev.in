@@ -5,3 +5,4 @@ uv
 pre-commit
 openpyxl
 twine
+pytest
