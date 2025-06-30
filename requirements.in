@@ -4,3 +4,4 @@ torch
 scipy
 matplotlib
 momentchi2
+openpyxl

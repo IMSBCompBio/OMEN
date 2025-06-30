@@ -1770,7 +1770,7 @@ dev = [
     { name = "rpds-py", specifier = "==0.22.3" },
     { name = "ruff", specifier = "==0.9.4" },
     { name = "send2trash", specifier = "==1.8.3" },
-    { name = "setuptools", specifier = "==75.8.0" },
+    { name = "setuptools", specifier = ">=75.8.0" },
     { name = "six", specifier = "==1.17.0" },
     { name = "sniffio", specifier = "==1.3.1" },
     { name = "soupsieve", specifier = "==2.6" },
