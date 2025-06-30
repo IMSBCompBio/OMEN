@@ -2,6 +2,18 @@
 
 
 
+## v0.0.10 (2025-06-26)
+
+### Fix
+
+* fix: need to remove local versioning ([`be48423`](https://github.com/IMSBCompBio/OMEN/commit/be4842359ce2ab12a0a6bd3351ec4792e2eaa428))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/IMSBCompBio/OMEN
+i think this is a ritual for me and workflows ([`082bfee`](https://github.com/IMSBCompBio/OMEN/commit/082bfee879731530025bbdbc751c67590ab562b1))
+
+
 ## v0.0.9 (2025-06-26)
 
 ### Fix
