@@ -248,7 +248,7 @@ ruff==0.9.4
     # via -r ./requirements.dev.in
 send2trash==1.8.3
     # via jupyter-server
-setuptools==75.8.0
+setuptools>=75.8.0
     # via jupyterlab
 six==1.17.0
     # via
