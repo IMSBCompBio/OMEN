@@ -1,3 +1,22 @@
+#*****************Notes on Triggering*****************
+# This workflow is triggered when a release is published on GitHub.
+# It bumps the version, updates the changelog, builds the package, and publishes it to TestPyPI.
+# Ensure that the PYPI_API_TOKEN secret is set in your repository settings for authentication with TestPyPI.
+# The GITHUB_TOKEN is automatically provided by GitHub Actions and does not need to be set manually.
+# The python-semantic-release action will handle versioning and changelog generation based on commit messages.
+# The build and twine commands will create the package and upload it to TestPyPI.
+# The workflow uses Python 3.x, which can be adjusted as needed.
+# The fetch-depth is set to 0 to ensure the full history is available for versioning and changelog generation.
+# The workflow uses the latest versions of actions for better performance and security.
+# The 'verbose' flag in the twine upload command provides detailed output during the upload procesS
+# ** Commands to publish to TestPyPI **
+#    - git tag v0.0.99 # Replace with your version
+#    - git push origin v0.0.99 # Push the tag to GitHub
+#    - gh release create v0.0.99 \
+#      --title "Test Release v0.0.99" \
+#      --notes "Triggering TestPyPI publish workflow"
+#*****************Notes on Triggering*****************
+
 name: Release to TestPyPI
 on:
   release:
@@ -32,4 +51,4 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: python3 -m twine upload --repository testpypi dist/* --verbose # help
+        run: python3 -m twine upload --repository testpypi dist/* --verbose 

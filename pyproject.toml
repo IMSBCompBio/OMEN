@@ -153,6 +153,7 @@ dev = [
     "pure-eval==0.2.3",
     "pycparser==2.22",
     "pygments==2.19.1",
+    "pytest>=8.4.1",
     "python-dateutil==2.9.0.post0",
     "python-json-logger==3.2.1",
     "pyyaml==6.0.2",
