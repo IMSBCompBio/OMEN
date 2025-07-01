@@ -25,7 +25,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Lint with Ruff
-    - uses: astral-sh/ruff-action@v3
+      uses: astral-sh/ruff-action@v3
       with:
           src: "./src"
           args: "format --check --diff"
