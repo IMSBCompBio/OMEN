@@ -195,4 +195,4 @@ cython_debug/
 
 # misc
 .vscode*
-*.RDS
+docker_spaco/R_scripts/SPACO_paper_data*.RDS
