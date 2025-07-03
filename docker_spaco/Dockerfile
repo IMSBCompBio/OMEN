@@ -50,15 +50,10 @@ RUN R -e "library(remotes); remotes::install_version('proxy', version='0.4.27')"
 # Home Directory
 WORKDIR /home/rstudio
 
-# Make directory for figure generation scripts
-# RUN mkdir -p /home/rstudio/figure_generation_scripts
-
 # load data 
-#COPY R_scripts/SpaCo_R_kia /home/rstudio/SpaCo_v2_R
-#COPY R_scripts/fig2_scripts /home/rstudio/figure_generation_scripts
-#COPY R_scripts/brain_seuratobject_raw.RData /home/rstudio
-#COPY R_scripts/fig2_scripts/Kia*/ home/rstudio/figure_generation_scripts/
-#COPY R_scripts/SpaCo_R_kia /home/rstudio/SpaCo_R_kia
+COPY docker_spaco/R_scripts/SPACO_paper_data /home/rstudio/data_dir/R_scripts/
+COPY docker_spaco/R_scripts/fig2_scripts/* /home/rstudio//data_dir/R_scripts/
+COPY docker_spaco/R_scripts/SpaCo_R_kia /home/rstudio/data_dir/R_scripts/
 
 # Expose RStudio Server port
 EXPOSE 8787
