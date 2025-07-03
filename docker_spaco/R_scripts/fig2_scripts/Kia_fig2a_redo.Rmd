@@ -1,0 +1,492 @@
+---
+title: "test_env"
+author: "Kiarash Rastegar"
+date: "2025-06-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(devtools)
+# Seurat v4.3.0.1 for Visium‐specific functions
+library(Seurat)            # >= 4.3.0.1
+# SPACO (assumes you have installed the SPACO package from Bioconductor or GitHub)
+devtools::load_all("/home/rstudio/data_dir/R_scripts/SpaCo_R_kia")  # for spatial component extraction
+# mclust for adjustedRandIndex (ARI)
+library(mclust)            # >= 6.0.0
+# aricode (or infotheo, etc.) for Normalized Mutual Information (NMI)
+library(aricode)           # contains NMI() function
+# tidyverse for data‐manipulation and plotting
+library(tidyverse) 
+```
+
+```{r}
+## reading in the Anterior brain data 
+
+anterior_slice_data = readRDS('/home/rstudio/data_dir/R_scripts/SPACO_paper_data/brain.RDS')
+anterior_map = readRDS('/home/rstudio/data_dir/R_scripts/SPACO_paper_data/mapped_data_brain.RDS')
+SPaCoObject_group2_2_anterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/SPaCoObject_group2_2_newgeary_brain.RDS")
+SPaCoObject_group1_2_anterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/SPaCoObject_group1_2_newgeary_brain.RDS")
+group_1_points_anterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/group_1_points_brain_newgeary.RDS")
+group_2_points_anterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/group_2_points_brain_newgeary.RDS")
+
+```
+
+```{r}
+### Read in liver data 
+liver_data = readRDS('/home/rstudio/data_dir/R_scripts/SPACO_paper_data/seurat_data_clust_liver.RDS')
+liver_map = readRDS('/home/rstudio/data_dir/R_scripts/SPACO_paper_data/mapped_data_liver.RDS')
+SPaCoObject_group2_2_liver <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/SPaCoObject_group2_2_newgeary.RDS")
+SPaCoObject_group1_2_liver <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/SPaCoObject_group1_2_newgeary.RDS")
+group_1_points_liver <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/group_1_points_liver_oldgeary.RDS")
+group_2_points_liver <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/group_2_points_liver_oldgeary.RDS")
+```
+
+```{r}
+### Reading in posterior data
+posterior_slice_data = readRDS('/home/rstudio/data_dir/R_scripts/SPACO_paper_data/seurat_data_clust_brain_posterior1.RDS')
+posterior_map = readRDS('/home/rstudio/data_dir/R_scripts/SPACO_paper_data/mapped_data_brain_posterior1.RDS')
+SPaCoObject_group1_2_posterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/SPaCoObject_group1_5_newgeary_brain_posterior1.RDS")
+SPaCoObject_group2_2_posterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/SPaCoObject_group2_5_newgeary_brain_posterior1.RDS")
+group_1_points_posterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/group_1_points_brain_newgeary_posterior1.RDS")
+group_2_points_posterior <- readRDS("/home/rstudio/data_dir/R_scripts/SPACO_paper_data/group_2_points_brain_newgeary_posterior1.RDS")
+
+```
+
+
+```{r}
+### Need to split each dataset into 2 i.e) group 1 & 2
+
+process_SPACO_groups <- function(
+  SPaCoObject_group2_2,
+  SPaCoObject_group1_2,
+  mapped_data,
+  data,
+  assay = "RNA",
+  vars_to_regress = c("^mt-", "^Hbb-"),
+  variable_features_n = 3000,
+  nSpacs = 200
+) {
+  
+  # Step 1: Subset mapped_data to match SPaCoObject_group2_2
+  mapped_data <- mapped_data[rownames(SPaCoObject_group2_2@data), ]
+  
+  # Step 2: Filter group 1 cells based on mapping
+  filtered_map_grp1 <- rownames(SPaCoObject_group1_2@data)[
+    rownames(SPaCoObject_group1_2@data) %in% mapped_data[mapped_data$groups == 2, "map"]
+  ]
+  
+  SPaCoObject_group1_2@data <- SPaCoObject_group1_2@data[filtered_map_grp1, ]
+  SPaCoObject_group1_2@projection <- SPaCoObject_group1_2@projection[filtered_map_grp1, ]
+  
+  # Step 3: Subset data groups (now using the input `data`)
+  data_group_1 <- subset(data, cells = filtered_map_grp1)
+  data_group_2 <- subset(data, cells = rownames(SPaCoObject_group2_2@data))
+  
+  # Step 4: Calculate percentage feature set for each variable to regress
+  for (var_pattern in vars_to_regress) {
+    col_name <- make.names(paste0("percent", var_pattern))
+    
+    data_group_1 <- Seurat::PercentageFeatureSet(
+      data_group_1,
+      pattern = var_pattern,
+      col.name = col_name
+    )
+    
+    data_group_2 <- Seurat::PercentageFeatureSet(
+      data_group_2,
+      pattern = var_pattern,
+      col.name = col_name
+    )
+  }
+  
+  # Step 5: SCTransform
+  data_group_1 <- SCTransform(
+    data_group_1,
+    assay = assay,
+    variable.features.n = variable_features_n,
+    vars.to.regress = make.names(paste0("percent", vars_to_regress))
+  )
+  
+  data_group_2 <- SCTransform(
+    data_group_2,
+    assay = assay,
+    variable.features.n = variable_features_n,
+    vars.to.regress = make.names(paste0("percent", vars_to_regress))
+  )
+  
+  # Step 6: Subset non-neighbour cells using SPACO
+  data_group_1 <- SPACO::subset_non_neighbour_cells(SPaCoObject_group1_2, data_group_1)
+  data_group_2 <- SPACO::subset_non_neighbour_cells(SPaCoObject_group2_2, data_group_2)
+  
+  # Step 7: Change SPACO object back into Seurat object
+  data_group_1 <- SPACO::spacs_to_seurat(
+    SPaCoObject_group1_2, data_group_1, nSpacs = nSpacs
+    )
+  data_group_2 <- SPACO::spacs_to_seurat(
+    SPaCoObject_group2_2, data_group_2, nSpacs = nSpacs
+    )
+  
+  # Return both data_group_1 and data_group_2
+  return(list(
+    data_group_1 = data_group_1,
+    data_group_2 = data_group_2,
+    filtered_map = filtered_map_grp1
+  ))
+}
+
+```
+
+### Liver is going to be my first test run 
+
+```{r}
+# liver data splits 
+result <- process_SPACO_groups(
+  SPaCoObject_group2_2_liver,
+  SPaCoObject_group1_2_liver,
+  liver_map,
+  liver_data,
+  assay = "RNA",
+  vars_to_regress = c("^mt-", "^Hbb-", "^Actb"),  # Example of passing your own patterns
+  variable_features_n = 3000                      # Example of passing your own feature number
+)
+
+liver_data_group_1 <- result$data_group_1
+liver_data_group_2 <- result$data_group_2
+liver_filter_map <- result$filtered_map
+```
+
+
+```{r}
+# anterior data splits 
+
+result_anterior <- process_SPACO_groups(
+  SPaCoObject_group2_2_anterior,
+  SPaCoObject_group1_2_anterior,
+  anterior_map,
+  anterior_slice_data,
+  assay="Spatial",
+  vars_to_regress = c("^mt-", "^Hbb-", "^Actb"),  # Example of passing your own patterns
+  variable_features_n = 3000                      # Example of passing your own feature number
+)
+
+anterior_data_group_1 <- result_anterior$data_group_1
+anterior_data_group_2 <- result_anterior$data_group_2
+anterior_filter_map <- result_anterior$filtered_map
+```
+
+
+```{r}
+# posterior data splits 
+
+result_posterior <- process_SPACO_groups(
+  SPaCoObject_group2_2_posterior,
+  SPaCoObject_group1_2_posterior,
+  posterior_map,
+  posterior_slice_data,
+  assay="Spatial",
+  vars_to_regress = c("^mt-", "^Hbb-", "^Actb"),  # Example of passing your own patterns
+  variable_features_n = 3000                      # Example of passing your own feature number
+)
+
+posterior_data_group_1 <- result_posterior$data_group_1
+posterior_data_group_2 <- result_posterior$data_group_2
+posterior_filter_map <- result_posterior$filtered_map
+```
+
+### Make PCA + SPACO Pipeline 
+```{r}
+
+dim_reduction <- function(
+  seurat_object,
+  resolution,
+  dims,
+  seed=NULL,
+  algorithm = 1,
+  spac_comp = TRUE
+  ){
+  
+  if (!is.null(seed)) set.seed(seed)
+  
+  if (!spac_comp) {
+    
+    # Check if PCA already computed
+    if (!"pca" %in% names(seurat_object@reductions)) {
+      seurat_object <- RunPCA(seurat_object, verbose = FALSE)
+    }
+    
+    # Elbow point detection
+    stdev <- seurat_object@reductions[["pca"]]@stdev
+    pct_var <- stdev^2 / sum(stdev^2) * 100
+    elbow <- which(diff(diff(pct_var)) > -0.1)[1] + 1
+    
+    seurat_object <- FindNeighbors(seurat_object, reduction = "pca", dims = 1:elbow, verbose = FALSE)
+  } else {
+    seurat_object <- FindNeighbors(seurat_object, reduction = "spaco", dims = 1:dims, verbose = FALSE)
+  }
+  
+  seurat_object <- FindClusters(seurat_object, resolution = resolution, algorithm = algorithm, random.seed=seed, verbose = FALSE)
+  return(seurat_object)
+}
+
+```
+
+
+```{r}
+# Liver clusters for PCA and SPACO group 1 vs group 2
+liver_data_group_1_pca <- dim_reduction(liver_data_group_1, resolution= 0.8, dims=20, seed=42, algorithm= 4, spac_comp = FALSE)
+liver_data_group_2_pca <- dim_reduction(liver_data_group_2,resolution= 0.8, dims=20, seed=42, algorithm= 4, spac_comp = FALSE)
+liver_data_group_1_spaco <- dim_reduction(liver_data_group_1, resolution= 0.8, dims=20, seed=42, algorithm= 4, spac_comp = TRUE)
+liver_data_group_2_spaco <- dim_reduction(liver_data_group_2, resolution= 0.8, dims=20, seed=42, algorithm= 4, spac_comp = TRUE)
+```
+
+
+```{r}
+# Posterior clusters for PCA and SPACO group 1 vs group 2
+# getting the correct number of dimenstions for FindNeighbors()
+dims_1 = SPaCoObject_group1_2_posterior@nSpacs
+dims_2 = SPaCoObject_group2_2_posterior@nSpacs
+
+# Running Neighbor graph generator and Cluster algorithms
+posterior_data_group_1_pca <- dim_reduction(posterior_data_group_1, resolution= 0.7, dims=5, algorithm= 4, spac_comp = FALSE)
+posterior_data_group_2_pca <- dim_reduction(posterior_data_group_2, resolution= 0.7, dims=5, algorithm= 4, spac_comp = FALSE)
+posterior_data_group_1_spaco <- dim_reduction(posterior_data_group_1, resolution= 0.7, dims=dims_1, algorithm= 4, spac_comp = TRUE)
+posterior_data_group_2_spaco <- dim_reduction(posterior_data_group_2, resolution= 0.7, dims=dims_2, algorithm= 4, spac_comp = TRUE)
+```
+
+
+```{r}
+# Anterior clusters for PCA and SPACO group 1 vs group 2
+
+# dims for neighborhood construction
+dims_1 = SPaCoObject_group1_2_anterior@nSpacs
+dims_2 = SPaCoObject_group2_2_anterior@nSpacs
+anterior_data_group_1_pca <- dim_reduction(anterior_data_group_1, resolution= 0.7, dims=5, algorithm= 4, spac_comp = FALSE)
+anterior_data_group_2_pca <- dim_reduction(anterior_data_group_2, resolution= 0.7, dims=5, algorithm= 4, spac_comp = FALSE)
+anterior_data_group_1_spaco <- dim_reduction(anterior_data_group_1, resolution= 0.7, dims=dims_1, algorithm= 4, spac_comp = TRUE)
+anterior_data_group_2_spaco <- dim_reduction(anterior_data_group_2, resolution= 0.7, dims=dims_2, algorithm= 4, spac_comp = TRUE)
+
+```
+
+### Calculating ARI and NMI scores for both groups from the split
+```{r}
+library(mclust)   # for adjustedRandIndex()
+library(aricode)  # for NMI()
+library(clue)     # for clue::cl_agreement(), if you ever want more measures
+library(Seurat)
+library(future)
+library(future.apply)
+#' Compare two clusterings (SPACO vs PCA) on matched cells
+#'
+#' @param data_spac1 Seurat object after SPACO clustering for group 1
+#' @param data_spac2 Seurat object after SPACO clustering for group 2
+#' @param data_pca1  Seurat object after PCA clustering for group 1
+#' @param data_pca2  Seurat object after PCA clustering for group 2
+#' @param cells1     Character vector of cell names to pull from "group 1"
+#' @param mapped_data Data.frame with at least a `$groups` column and rownames = all cells
+#' @param group      Value in `mapped_data$groups` corresponding to "group 2" (default = 2)
+#' @param cluster_col Name of the meta.data column containing cluster IDs (default = "seurat_clusters")
+#'
+#' @return A list with ARI and NMI for SPACO and PCA clusterings
+#' @examples
+#' res <- compare_clusterings(
+#'   data_spac1 = data_group_1_spac,
+#'   data_spac2 = data_group_2_spac,
+#'   data_pca1  = data_group_1_pca,
+#'   data_pca2  = data_group_2_pca,
+#'   cells1     = filtered_map_grp1,
+#'   mapped_data = mapped_data,
+#'   group      = 2
+#' )
+library(future)
+library(future.apply)
+
+compare_clusterings <- function(
+  data_group_1,
+  data_group_2,
+  cells1,
+  mapped_data,
+  tissue_label,
+  dims,
+  algorithm,
+  resolution,
+  stringsAsFactors = FALSE,
+  cluster_col = "seurat_clusters",
+  n_iter = 1000
+) {
+  # Subset mapped data to get matching cells2
+  md_sub <- mapped_data[mapped_data$map %in% cells1, , drop = FALSE]
+  cells2 <- rownames(md_sub)
+  
+  # double checking to see the length of the cells vectors for both groups are the same
+  if (length(cells1) != length(cells2)) {
+    stop("Length mismatch: ", length(cells1), " vs ", length(cells2))
+  }
+  
+  # Check if PCA already computed
+  if (!"pca" %in% names(data_group_1@reductions)) {
+    data_group_1 <- RunPCA(data_group_1, verbose = FALSE)
+  }
+  if (!"pca" %in% names(data_group_2@reductions)) {
+    data_group_2 <- RunPCA(data_group_2, verbose = FALSE)
+  }
+  
+  # Setup parallel environment
+  options(future.globals.maxSize = 4 * 1024^3)  # 4GB per worker if needed
+  plan(multicore, workers = parallel::detectCores() - 1)
+
+  # Efficient future loop: pass all data as args
+  cluster_stats <- future_lapply(
+    1:n_iter,
+    function(i, dg1, dg2, c1, c2, cluster_col, tissue_label, dims, resolution) {
+      
+      # PCA runs
+      dg1_pca <- dim_reduction(dg1, resolution = resolution, dims = dims, algorithm = algorithm, seed = i, spac_comp = FALSE)
+      dg2_pca <- dim_reduction(dg2, resolution = resolution, dims = dims, algorithm = algorithm, seed = i, spac_comp = FALSE)
+
+      # SPACO runs
+      dg1_spac <- dim_reduction(dg1, resolution = resolution, dims = dims, algorithm = algorithm, seed = i, spac_comp = TRUE)
+      dg2_spac <- dim_reduction(dg2, resolution = resolution, dims = dims, algorithm = algorithm, seed = i, spac_comp = TRUE)
+
+      # Cluster extraction
+      cl_pca1  <- dg1_pca@meta.data[c1, cluster_col, drop = TRUE]
+      cl_pca2  <- dg2_pca@meta.data[c2, cluster_col, drop = TRUE]
+      cl_spac1 <- dg1_spac@meta.data[c1, cluster_col, drop = TRUE]
+      cl_spac2 <- dg2_spac@meta.data[c2, cluster_col, drop = TRUE]
+
+      # Metric calculation
+      data.frame(
+        ARI_spaco = adjustedRandIndex(cl_spac1, cl_spac2),
+        NMI_spaco = NMI(cl_spac1, cl_spac2),
+        ARI_pca   = adjustedRandIndex(cl_pca1, cl_pca2),
+        NMI_pca   = NMI(cl_pca1, cl_pca2),
+        seed      = i,
+        tissue    = tissue_label
+      )
+    },
+    # Explicitly pass all data objects as args
+    dg1 = data_group_1,
+    dg2 = data_group_2,
+    c1 = cells1,
+    c2 = cells2,
+    cluster_col = cluster_col,
+    tissue_label = tissue_label,
+    dims = dims,
+    resolution = resolution,
+    future.seed = TRUE
+  )
+
+  # Combine results
+  return(do.call(rbind, cluster_stats))
+}
+
+```
+
+
+# ARI and NMI of Dim Reduction methods
+```{r}
+
+# liver ARI and NMI for SPACO and PCA
+liver_res <- compare_clusterings(
+  data_group_1   = liver_data_group_1,
+  data_group_2   = liver_data_group_2,
+  cells1       = liver_filter_map,
+  mapped_data  = liver_map,
+  resolution = 0.8,
+  algorithm = 4,
+  dims = 200,
+  tissue_label = "liver",
+  cluster_col  = "seurat_clusters"
+)
+# benchmark the results for 
+saveRDS(liver_res, '/home/rstudio/data_dir/R_scripts/fig2_scripts/liver_ARI_NMI_df.RDS')
+```
+
+
+```{r}
+
+# anterior brain slice ARI and NMI for SPACO and PCA
+anterior_res <- compare_clusterings(
+  data_group_1 = anterior_data_group_1, 
+  data_group_2 = anterior_data_group_2,
+  cells1       = anterior_filter_map,
+  resolution= 0.7, 
+  algorithm = 4,
+  dims=5, 
+  tissue_label = "Brain anterior",
+  mapped_data  = anterior_map,
+  cluster_col  = "seurat_clusters"
+)
+
+saveRDS(anterior_res, '/home/rstudio/data_dir/R_scripts/fig2_scripts/anterior_ARI_NMI_df.RDS')
+```
+
+
+```{r}
+
+# posterior brain slice ARI and NMI for SPACO and PCA
+posterior_res <- compare_clusterings(
+  data_group_1 = posterior_data_group_1, 
+  data_group_2 = posterior_data_group_2,
+  cells1       = posterior_filter_map,
+  resolution= 0.7, 
+  algorithm = 4,
+  dims=5, 
+  tissue_label = "Brain posterior",
+  mapped_data  = posterior_map,
+  cluster_col  = "seurat_clusters"
+)
+saveRDS(posterior_res, '/home/rstudio/data_dir/R_scripts/fig2_scripts/posterior_ARI_NMI_df.RDS')
+```
+
+# final dataframe for plotting
+```{r}
+liver_res = readRDS('/home/rstudio/data_dir/R_scripts/fig2_scripts/liver_ARI_NMI_df.RDS')
+anterior_res = readRDS('/home/rstudio/data_dir/R_scripts/fig2_scripts/anterior_ARI_NMI_df.RDS')
+posterior_res = readRDS('/home/rstudio/data_dir/R_scripts/fig2_scripts/posterior_ARI_NMI_df.RDS')
+# creating a dataframe that combines all ARI, NMI scores
+combined_df <- do.call(rbind, list(
+  liver_res,
+  anterior_res,
+  posterior_res
+))
+# Reshape the data to long format for plotting
+long_df <- combined_df %>%
+  pivot_longer(
+    cols = c(ARI_spaco, ARI_pca, NMI_spaco, NMI_pca),
+    names_to = c("metric", "method"),
+    names_sep = "_",
+    values_to = "value"
+  )
+
+# Ensure factor levels for consistent order and labeling
+long_df$method <- factor(long_df$method, levels = c("spaco", "pca"), labels = c("SPACO", "PCA"))
+long_df$metric <- factor(long_df$metric, levels = c("ARI", "NMI"))
+
+```
+
+
+# final boxplot showing results of clustering analysis
+```{r}
+
+# Plot: facet by metric, x-axis is tissue
+
+ggplot(long_df, aes(x = tissue, y = value, fill = method)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.8) +
+  scale_fill_manual(values = c("SPACO" = "orange", "PCA" = "yellow")) +
+  facet_wrap(~ metric, scales = "free_y") +
+  coord_cartesian(ylim = c(0.05, 1)) +  # adjust range as needed
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  ylab("Score") +
+  xlab("Tissue")
+
+
+
+```
+

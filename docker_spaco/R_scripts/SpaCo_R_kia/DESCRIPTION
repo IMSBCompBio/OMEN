@@ -1,0 +1,35 @@
+Package: SPACO
+Title: This packages computes spatial components for spatial sequencing data.
+Version: 0.1.0
+Author: Niklas Kleinenkuhnen, David Köhler
+Maintainer: Niklas Kleinenkuhnen <nkleinen@smail.uni-koeln.de>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1
+LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
+Imports: 
+    dplyr,
+    ggplot2,
+    lsa,
+    MASS,
+    parallel,
+    pracma,
+    Seurat,
+    Rcpp (>= 1.0.10),
+    RcppEigen,
+    tibble,
+    ggforce,
+    methods,
+    patchwork,
+    rARPACK,
+    rcartocolor,
+    tidyr,
+    RcppArmadillo,
+    BH,
+    mgcv,
+    CompQuadForm,
+    scales,
+    Matrix
+License: MIT + file LICENSE
