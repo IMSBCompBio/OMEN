@@ -1,5 +1,6 @@
 FROM rocker/rstudio:4.4
 
+LABEL org.opencontainers.image.source=https://github.com/krastegar/OMEN
 # Set environment variables 
 # non interactive mode is for dealing with arguements that require response 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -65,6 +66,7 @@ RUN echo 'server-daemonize=0' >> /etc/rstudio/rserver.conf && \
 
 # Set default user and password
 ENV USERNAME=rstudio
+ENV PASSWORD=123
 
 # Keep the container running
 CMD ["/init"]
