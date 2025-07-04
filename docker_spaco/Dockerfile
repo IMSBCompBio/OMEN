@@ -53,8 +53,8 @@ WORKDIR /home/rstudio
 
 # load data 
 COPY docker_spaco/R_scripts/SPACO_paper_data /home/rstudio/data_dir/R_scripts/
-COPY docker_spacoR_scripts/fig2_scripts/* /home/rstudio/data_dir/R_scripts/
-COPY docker_R_scripts/SpaCo_R_kia /home/rstudio/data_dir/R_scripts/
+COPY docker_spaco/R_scripts/fig2_scripts/* /home/rstudio/data_dir/R_scripts/
+COPY docker_spaco/R_scripts/SpaCo_R_kia /home/rstudio/data_dir/R_scripts/
 
 # Expose RStudio Server port
 EXPOSE 8787
