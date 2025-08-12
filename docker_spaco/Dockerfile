@@ -1,5 +1,6 @@
 FROM rocker/rstudio:4.4
 
+LABEL org.opencontainers.image.source=https://github.com/krastegar/OMEN
 # Set environment variables 
 # non interactive mode is for dealing with arguements that require response 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,9 +52,9 @@ RUN R -e "library(remotes); remotes::install_version('proxy', version='0.4.27')"
 WORKDIR /home/rstudio
 
 # load data 
-COPY R_scripts/SPACO_paper_data /home/rstudio/data_dir/R_scripts/
-COPY R_scripts/fig2_scripts/* /home/rstudio/data_dir/R_scripts/
-COPY R_scripts/SpaCo_R_kia /home/rstudio/data_dir/R_scripts/
+COPY docker_spaco/R_scripts/SPACO_paper_data /home/rstudio/data_dir/R_scripts/
+COPY docker_spaco/R_scripts/fig2_scripts/* /home/rstudio/data_dir/R_scripts/
+COPY docker_spaco/R_scripts/SpaCo_R_kia /home/rstudio/data_dir/R_scripts/
 
 # Expose RStudio Server port
 EXPOSE 8787
@@ -65,6 +66,7 @@ RUN echo 'server-daemonize=0' >> /etc/rstudio/rserver.conf && \
 
 # Set default user and password
 ENV USERNAME=rstudio
+ENV PASSWORD=123
 
 # Keep the container running
 CMD ["/init"]
