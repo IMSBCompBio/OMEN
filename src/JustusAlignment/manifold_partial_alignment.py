@@ -148,6 +148,7 @@ def compute_mahalanobis(Z: np.ndarray, A: np.ndarray, eps: float = 1e-4) -> Tupl
     # Z^T W Z
     ZTW = Z.T.dot(W)
     Sigma = 0.5 * ZTW.dot(Z) + eps * np.eye(Z.shape[1])
+    
     # ensure symmetric
     Sigma = 0.5 * (Sigma + Sigma.T)
     S_inv = inv(Sigma)

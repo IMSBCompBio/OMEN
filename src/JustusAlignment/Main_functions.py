@@ -1,4 +1,3 @@
-
 # All functions required for integration: 
 import torch
 import torch.nn as nn
@@ -66,23 +65,23 @@ class EmbedNet(nn.Module):
     def forward(self, x):
         return self.net(x)
     
-def train_joint_embedding(X, Y, epochs=1000, lr=1e-3, k=20, embed_dim=2, device='cpu', verbose=False, alpha=0.5):
+def train_joint_embedding(X, Y, epochs=1000, lr=1e-3, k=20, embed_dim=2, device='cuda', verbose=False, alpha=0.5):
 
     # Convert to pytorch-tensors datastructure for input matrix R^(n x f): 
+    device = 'cuda' if torch.cuda.device_count() > 0 else 'cpu'
     X = torch.tensor(X, dtype=torch.float32, device=device)
     Y = torch.tensor(Y, dtype=torch.float32, device=device)
 
     # Construction of MLP, maps R^n -> R^2 for all feature vectors in X,Y 
-    f_net = EmbedNet(X.shape[1], embed_dim).to(device)
-    g_net = EmbedNet(Y.shape[1], embed_dim).to(device)
+    # Use DataParallel for multi-GPU support
+    
+    f_net = nn.DataParallel(EmbedNet(X.shape[1], embed_dim).to(device))
+    g_net = nn.DataParallel(EmbedNet(Y.shape[1], embed_dim).to(device))
     optimizer = torch.optim.Adam(list(f_net.parameters()) + list(g_net.parameters()), lr=lr)
 
     # Adapt K for non-matching spot dimensions to define similar KNN radius: 
     k_P = round(np.sqrt(X.numel() / Y.numel()) * k)
     k_Q = round(np.sqrt(Y.numel() / X.numel()) * k)
-    #Previous way: 
-    #k_P = round(X.numel() / (X.numel() + Y.numel()) * k)
-    #k_Q = round(Y.numel() / (X.numel() + Y.numel()) * k)
 
     # Precompute diffusion transition matrices P and Q on X and Y
     P = knn_graph(X, k=k_P)
@@ -114,7 +113,7 @@ def train_joint_embedding(X, Y, epochs=1000, lr=1e-3, k=20, embed_dim=2, device=
     
 # More efficient loop for the training process
 
-def proceed_train_joint_embedding(X, Y, f_net, g_net, epochs=2000, lr=1e-3, k=20, embed_dim=2, device='cpu', verbose=False, alpha=0.5):
+def proceed_train_joint_embedding(X, Y, f_net, g_net, epochs=2000, lr=1e-3, k=20, embed_dim=2, device='cuda', verbose=False, alpha=0.5):
 
     # Convert to pytorch-tensors datastructure for input matrix R^(n x f): 
     X = torch.tensor(X, dtype=torch.float32, device=device)
@@ -133,6 +132,12 @@ def proceed_train_joint_embedding(X, Y, f_net, g_net, epochs=2000, lr=1e-3, k=20
     # Precompute diffusion transition matrices P and Q on X and Y
     P = knn_graph(X, k=k_P)
     Q = knn_graph(Y, k=k_Q)
+
+    # Wrap models for multi-GPU
+    # Check if CUDA is available and set device accordingly
+    device = 'cuda' if torch.cuda.device_count() > 0 else 'cpu'
+    f_net = nn.DataParallel(f_net).to(device)
+    g_net = nn.DataParallel(g_net).to(device)
 
     # Training iteration: 
     for epoch in range(epochs):

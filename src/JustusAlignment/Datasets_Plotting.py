@@ -382,6 +382,9 @@ def project_to_high_dim_space(data, output_dim=300, noise_range=0.0, random_seed
         raise ValueError("Output dimension must be greater than or equal to input dimension.")
     
     # Create a full-rank random projection matrix (bijective linear transform)
+    if output_dim < input_dim:
+        raise ValueError("Output dimension must be greater than or equal to input dimension.")
+    
     A = np.random.randn(output_dim, input_dim)
     while np.linalg.matrix_rank(A) < input_dim:
         A = np.random.randn(output_dim, input_dim)
